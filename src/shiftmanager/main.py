@@ -1,17 +1,16 @@
-"""Application entry point.
+"""Application entry point: open the database, then run the main window."""
 
-Opens the database and launches the Tk main window. The GUI is added in a
-later build step; for now this only sets up the database.
-"""
-
-from shiftmanager.db import DEFAULT_DB_PATH, connect
+from shiftmanager.db import connect
+from shiftmanager.gui import App
 
 
 def main() -> None:
     """Start the Work Shift Manager application."""
     conn = connect()
-    conn.close()
-    print(f"Work Shift Manager: database ready at {DEFAULT_DB_PATH}.")
+    try:
+        App(conn).mainloop()
+    finally:
+        conn.close()
 
 
 if __name__ == "__main__":

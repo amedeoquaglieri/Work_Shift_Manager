@@ -37,8 +37,9 @@ with `models` and `utils` usable from anywhere.
 | `services/` | rules spanning repositories (conflicts, reports) | import `tkinter` |
 | `gui/` | Tk frames and dialogs | write raw SQL |
 
-`sqlite3` is imported only under `db/` and `repositories/`. `tkinter` is
-imported only under `gui/` and `main.py`.
+SQL statements appear only under `db/` and `repositories/`. Elsewhere
+`sqlite3` may be imported solely for the `Connection` type annotation.
+`tkinter` is imported only under `gui/` and `main.py`.
 
 ## Conventions
 
