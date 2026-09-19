@@ -68,8 +68,7 @@ work_shift_manager/
 │       ├── db/
 │       │   ├── __init__.py
 │       │   ├── connection.py    # sqlite3 connection helper, PRAGMA setup
-│       │   ├── schema.sql       # CREATE TABLE statements
-│       │   └── migrations.py    # simple versioned migration runner (v1: none/no-op)
+│       │   └── schema.sql       # CREATE TABLE IF NOT EXISTS statements
 │       ├── models/
 │       │   ├── __init__.py
 │       │   ├── employee.py      # Employee dataclass
@@ -109,7 +108,9 @@ work_shift_manager/
 ```
 
 **Layer responsibilities:**
-- `db/`: connection management and raw schema only.
+- `db/`: connection management and raw schema only. The schema is applied
+  with `CREATE TABLE IF NOT EXISTS` on every connect, so v1 needs no
+  migration runner; add one only when a released schema has to change.
 - `models/`: plain dataclasses representing domain entities, no DB logic.
 - `repositories/`: SQL queries, translate rows ↔ model objects. Only layer
   that touches `sqlite3` directly.

@@ -31,7 +31,7 @@ with `models` and `utils` usable from anywhere.
 
 | Layer | Holds | Must not |
 | --- | --- | --- |
-| `db/` | connection helper, `schema.sql`, migration runner | know about domain rules |
+| `db/` | connection helper, `schema.sql` | know about domain rules |
 | `models/` | plain dataclasses | touch SQL or Tk |
 | `repositories/` | all SQL; rows ↔ model objects | hold business rules |
 | `services/` | rules spanning repositories (conflicts, reports) | import `tkinter` |
