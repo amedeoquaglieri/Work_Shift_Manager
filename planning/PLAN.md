@@ -164,6 +164,13 @@ Overlap detection (for double-booking prevention) is done in
 date and comparing start/end times in Python (SQLite has no native time
 overlap operator).
 
+A shift whose `end_time` is earlier than its `start_time` runs past
+midnight and ends the following day — 22:00 to 06:00 is an eight hour
+overnight shift. Conflict checks therefore scan the day either side of the
+shift being assigned, while hours always count towards the day the shift
+starts on. Shifts that merely touch (09:00-17:00 then 17:00-22:00) do not
+conflict.
+
 ## 5. GUI Design (Tkinter)
 
 - **Main window (`app.py`)**: menu bar (File, Employees, Reports) or a

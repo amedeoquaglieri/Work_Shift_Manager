@@ -47,6 +47,8 @@ imported only under `gui/` and `main.py`.
   `utils/datetime_utils.py` for comparisons and formatting.
 - Shift overlap / double-booking checks live in
   `services/scheduling_service.py`, computed in Python — not in SQL.
+- An `end_time` before `start_time` means the shift runs past midnight into
+  the next day. Hours count towards the day the shift starts on.
 - Repositories take an open `sqlite3.Connection`; they never open their own.
 - Employees are deactivated (`is_active = 0`), never deleted.
 - `ttk` widgets throughout, not raw `tk` ones, for consistent theming.
