@@ -103,7 +103,7 @@ work_shift_manager/
 │   └── test_report_service.py
 ├── data/
 │   └── shifts.db                # created at runtime, git-ignored
-├── requirements.txt              # empty / stdlib-only for v1 (see §4)
+├── pyproject.toml                # uv project config; no runtime deps (see §9)
 ├── .gitignore
 └── README.md
 ```
@@ -208,7 +208,8 @@ overlap operator).
 
 ## 8. Build Order
 
-1. Project scaffolding (`src/` layout, `requirements.txt`, `.gitignore`).
+1. Project scaffolding (`src/` layout, `pyproject.toml` via `uv init`,
+   `.gitignore`).
 2. `db/` connection + schema creation on first run.
 3. `models/` dataclasses.
 4. `repositories/` with unit tests against an in-memory DB.
@@ -225,6 +226,7 @@ overlap operator).
 ## 9. Dependencies
 
 - Standard library only for v1: `tkinter`, `sqlite3`, `dataclasses`,
-  `datetime`, `csv`. No third-party packages required, keeping setup to
-  "install Python 3.11+ and run `python -m shiftmanager.main`".
-- `pytest` as a dev-only dependency for the test suite.
+  `datetime`, `csv`. No third-party runtime packages required.
+- `uv` manages the project (`pyproject.toml`). Setup is `uv sync`, launch is
+  `uv run python -m shiftmanager.main`.
+- `pytest` as the only dev dependency, for the test suite.
