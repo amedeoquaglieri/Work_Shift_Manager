@@ -1,0 +1,25 @@
+[project]
+name = "shiftmanager"
+version = "0.1.0"
+description = "Tkinter desktop app for managing employee work shifts"
+readme = "README.md"
+authors = [
+    { name = "Amedeo Quaglieri", email = "amedeoquaglieri@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+shiftmanager = "shiftmanager.main:main"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
