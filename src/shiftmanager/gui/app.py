@@ -3,6 +3,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from shiftmanager.gui.employee_view import EmployeeView
+
 WINDOW_TITLE = "Work Shift Manager"
 VIEW_NAMES = ("Roster", "Employees", "Reports")
 
@@ -51,8 +53,13 @@ class App(tk.Tk):
         content.columnconfigure(0, weight=1)
         content.rowconfigure(0, weight=1)
 
+        builders = {
+            "Roster": lambda parent: _placeholder(parent, "Roster"),
+            "Employees": lambda parent: EmployeeView(parent, self.conn),
+            "Reports": lambda parent: _placeholder(parent, "Reports"),
+        }
         for name in VIEW_NAMES:
-            view = _placeholder(content, name)
+            view = builders[name](content)
             view.grid(row=0, column=0, sticky="nsew")
             self._views[name] = view
 
