@@ -1,0 +1,71 @@
+﻿"""Construction tests for the Tk views and dialogs.
+
+These catch mistakes that only show up when a widget is built or torn down,
+such as naming an attribute something tkinter already uses internally. They
+skip themselves where no display is available.
+"""
+
+import pytest
+
+tkinter = pytest.importorskip("tkinter")
+
+from shiftmanager.db import IN_MEMORY, connect  # noqa: E402
+from shiftmanager.gui import App  # noqa: E402
+from shiftmanager.gui.employee_dialog import EmployeeDialog  # noqa: E402
+from shiftmanager.gui.shift_dialog import ShiftDialog  # noqa: E402
+from shiftmanager.gui.template_dialog import TemplateDialog  # noqa: E402
+from shiftmanager.gui.template_manager import TemplateManager  # noqa: E402
+from shiftmanager.models import Employee, Shift, ShiftTemplate  # noqa: E402
+
+
+@pytest.fixture(scope="module")
+def app():
+    """One hidden main window shared by the whole module.
+
+    Tk does not reliably start a second root in the same process, so these
+    tests build it once rather than per test.
+    """
+    connection = connect(IN_MEMORY)
+    try:
+        window = App(connection)
+    except tkinter.TclError as error:
+        pytest.skip(f"no usable Tk display: {error}")
+    window.withdraw()
+    yield window
+    window.destroy()
+    connection.close()
+
+
+def test_the_window_builds_every_view(app):
+    assert set(app._views) == {"Roster", "Employees", "Reports"}
+
+
+def test_employee_dialog_builds_and_closes(app):
+    EmployeeDialog(app, "Add Employee").destroy()
+
+
+def test_employee_dialog_builds_from_an_existing_employee(app):
+    employee = Employee(name="Ada", is_active=False, id=1)
+    EmployeeDialog(app, "Edit Employee", employee=employee).destroy()
+
+
+def test_shift_dialog_builds_and_closes(app):
+    ShiftDialog(app, app.conn, "New Shift").destroy()
+
+
+def test_shift_dialog_builds_from_an_existing_shift(app):
+    shift = Shift(shift_date="2026-09-21", start_time="09:00", end_time="17:00", id=1)
+    ShiftDialog(app, app.conn, "Edit Shift", shift=shift).destroy()
+
+
+def test_template_dialog_builds_and_closes(app):
+    TemplateDialog(app, "Add Template").destroy()
+
+
+def test_template_dialog_builds_from_an_existing_template(app):
+    template = ShiftTemplate(name="Morning", start_time="09:00", end_time="17:00", id=1)
+    TemplateDialog(app, "Edit Template", template=template).destroy()
+
+
+def test_template_manager_builds_and_closes(app):
+    TemplateManager(app, app.conn).destroy()

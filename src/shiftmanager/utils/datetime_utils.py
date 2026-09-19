@@ -4,7 +4,7 @@ Dates are ``"YYYY-MM-DD"`` and times are ``"HH:MM"`` everywhere else in the
 app. This module is the only place that turns them into datetime objects.
 """
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 
 DATE_FORMAT = "%Y-%m-%d"
 TIME_FORMAT = "%H:%M"
@@ -18,6 +18,11 @@ def parse_date(date_str: str) -> date:
 def format_date(value: date) -> str:
     """Write a date as ``"YYYY-MM-DD"``."""
     return value.strftime(DATE_FORMAT)
+
+
+def parse_time(time_str: str) -> time:
+    """Read an ``"HH:MM"`` string, raising ValueError when it is malformed."""
+    return datetime.strptime(time_str, TIME_FORMAT).time()
 
 
 def add_days(date_str: str, days: int) -> str:

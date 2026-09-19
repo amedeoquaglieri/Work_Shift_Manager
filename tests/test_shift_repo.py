@@ -62,6 +62,20 @@ def test_list_between_orders_by_date_then_start_time(conn):
     ]
 
 
+def test_list_all_returns_every_shift_in_roster_order(conn):
+    shift_repo.add(conn, a_shift(date="2026-09-28", start="09:00"))
+    shift_repo.add(conn, a_shift(date="2026-09-21", start="17:00"))
+    shift_repo.add(conn, a_shift(date="2026-09-21", start="06:00"))
+
+    found = shift_repo.list_all(conn)
+
+    assert [(s.shift_date, s.start_time) for s in found] == [
+        ("2026-09-21", "06:00"),
+        ("2026-09-21", "17:00"),
+        ("2026-09-28", "09:00"),
+    ]
+
+
 def test_templates_round_trip(conn):
     stored = shift_repo.add_template(
         conn, ShiftTemplate(name="Morning", start_time="09:00", end_time="17:00")

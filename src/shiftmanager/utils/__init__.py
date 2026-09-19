@@ -5,6 +5,7 @@ from shiftmanager.utils.datetime_utils import (
     duration_hours,
     format_date,
     parse_date,
+    parse_time,
     shift_span,
 )
 
@@ -13,5 +14,6 @@ __all__ = [
     "duration_hours",
     "format_date",
     "parse_date",
+    "parse_time",
     "shift_span",
 ]

@@ -3,6 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from shiftmanager.gui.calendar_view import CalendarView
 from shiftmanager.gui.employee_view import EmployeeView
 
 WINDOW_TITLE = "Work Shift Manager"
@@ -54,7 +55,7 @@ class App(tk.Tk):
         content.rowconfigure(0, weight=1)
 
         builders = {
-            "Roster": lambda parent: _placeholder(parent, "Roster"),
+            "Roster": lambda parent: CalendarView(parent, self.conn),
             "Employees": lambda parent: EmployeeView(parent, self.conn),
             "Reports": lambda parent: _placeholder(parent, "Reports"),
         }

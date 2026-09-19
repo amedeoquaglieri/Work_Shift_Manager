@@ -1,8 +1,16 @@
 """Tests for the date and time helpers."""
 
-from datetime import date
+from datetime import date, time
 
-from shiftmanager.utils import add_days, duration_hours, format_date, parse_date
+import pytest
+
+from shiftmanager.utils import (
+    add_days,
+    duration_hours,
+    format_date,
+    parse_date,
+    parse_time,
+)
 
 
 def test_parse_and_format_round_trip():
@@ -13,6 +21,16 @@ def test_parse_and_format_round_trip():
 def test_add_days_crosses_month_boundaries():
     assert add_days("2026-09-30", 1) == "2026-10-01"
     assert add_days("2026-10-01", -1) == "2026-09-30"
+
+
+def test_parse_time_reads_a_clock_time():
+    assert parse_time("09:30") == time(9, 30)
+
+
+@pytest.mark.parametrize("bad", ["", "9:30am", "25:00", "09-30", "0930"])
+def test_parse_time_rejects_malformed_input(bad):
+    with pytest.raises(ValueError):
+        parse_time(bad)
 
 
 def test_duration_of_a_normal_shift():
