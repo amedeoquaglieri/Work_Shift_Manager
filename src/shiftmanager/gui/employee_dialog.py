@@ -104,6 +104,16 @@ class EmployeeDialog(tk.Toplevel):
         else:
             rate = None
 
+        colour = self._color.get().strip()
+        if colour and not self._is_drawable(colour):
+            messagebox.showerror(
+                "Invalid colour",
+                f"'{colour}' is not a colour. Use the picker or a hex value "
+                "such as #3366cc.",
+                parent=self,
+            )
+            return
+
         self.result = Employee(
             id=self._employee.id if self._employee else None,
             name=values["name"],
@@ -111,7 +121,15 @@ class EmployeeDialog(tk.Toplevel):
             phone=values["phone"] or None,
             email=values["email"] or None,
             hourly_rate=rate,
-            color_tag=self._color.get().strip() or None,
+            color_tag=colour or None,
             is_active=self._active.get(),
         )
         self.destroy()
+
+    def _is_drawable(self, colour: str) -> bool:
+        """Whether Tk can turn the text into a colour."""
+        try:
+            self.winfo_rgb(colour)
+        except tk.TclError:
+            return False
+        return True

@@ -1,5 +1,10 @@
 # Work Shift Manager — Implementation Plan
 
+**Status:** all twelve steps in §8 are built. Everything in §7 remains out
+of scope. Two decisions changed during the build and are recorded in place:
+the v1 schema needs no migration runner (§3), and a shift ending before it
+starts runs past midnight (§4).
+
 ## 1. Overview
 
 A desktop application for managing employee work shifts. A manager uses the

@@ -105,6 +105,19 @@ def test_the_roster_draws_a_staffed_shift(app):
     assert any(card.cget("text") == "09:00 - 17:00" for card in cards)
 
 
+def test_the_roster_survives_an_unusable_colour_tag(app):
+    """A bad colour in the database must not stop the window opening."""
+    shift = shift_repo.add(
+        app.conn, Shift(shift_date=today(), start_time="07:00", end_time="08:00")
+    )
+    employee = employee_repo.add(
+        app.conn, Employee(name="Bad Colour", color_tag="zzz")
+    )
+    assignment_repo.add(app.conn, shift.id, employee.id)
+
+    app._views["Roster"].refresh()
+
+
 def test_the_report_view_runs_for_the_current_week(app):
     report = app._views["Reports"]
 

@@ -132,7 +132,9 @@ class CalendarView(ttk.Frame):
             ttk.Label(card, text="unstaffed", foreground=MUTED_COLOUR).pack(anchor="w")
         for employee in staff:
             ttk.Label(
-                card, text=employee.name, foreground=employee.color_tag or ""
+                card,
+                text=employee.name,
+                foreground=_usable_colour(card, employee.color_tag),
             ).pack(anchor="w")
 
         if shift.notes:
@@ -190,6 +192,21 @@ class CalendarView(ttk.Frame):
     def _this_week(self) -> None:
         self._week_start = week_start(today())
         self.refresh()
+
+
+def _usable_colour(widget, colour: str | None) -> str:
+    """The colour if Tk can draw it, otherwise the default foreground.
+
+    Colour tags are free text and may predate validation, and an unusable
+    one would otherwise stop the whole window from opening.
+    """
+    if not colour:
+        return ""
+    try:
+        widget.winfo_rgb(colour)
+    except tk.TclError:
+        return ""
+    return colour
 
 
 def _bind_deep(widget, sequence: str, handler) -> None:
