@@ -4,6 +4,7 @@ Dates are ``"YYYY-MM-DD"`` and times are ``"HH:MM"`` everywhere else in the
 app. This module is the only place that turns them into datetime objects.
 """
 
+import calendar
 from datetime import date, datetime, time, timedelta
 
 DATE_FORMAT = "%Y-%m-%d"
@@ -29,6 +30,22 @@ def week_start(date_str: str) -> str:
     """The Monday of the week containing the given date."""
     value = parse_date(date_str)
     return format_date(value - timedelta(days=value.weekday()))
+
+
+def week_bounds(date_str: str) -> tuple[str, str]:
+    """The Monday and Sunday of the week containing the given date."""
+    monday = week_start(date_str)
+    return monday, add_days(monday, 6)
+
+
+def month_bounds(date_str: str) -> tuple[str, str]:
+    """The first and last dates of the month containing the given date."""
+    value = parse_date(date_str)
+    last_day = calendar.monthrange(value.year, value.month)[1]
+    return (
+        format_date(value.replace(day=1)),
+        format_date(value.replace(day=last_day)),
+    )
 
 
 def week_dates(start_date: str) -> list[str]:

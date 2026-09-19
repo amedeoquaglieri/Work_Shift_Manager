@@ -5,6 +5,7 @@ from tkinter import ttk
 
 from shiftmanager.gui.calendar_view import CalendarView
 from shiftmanager.gui.employee_view import EmployeeView
+from shiftmanager.gui.report_view import ReportView
 
 WINDOW_TITLE = "Work Shift Manager"
 VIEW_NAMES = ("Roster", "Employees", "Reports")
@@ -33,8 +34,14 @@ class App(tk.Tk):
         self.show("Roster")
 
     def show(self, name: str) -> None:
-        """Bring one view to the front of the content area."""
-        self._views[name].tkraise()
+        """Bring one view to the front, reloading it from the database first.
+
+        Work done on one screen usually shows on another, so each view picks
+        up the current data as it is raised.
+        """
+        view = self._views[name]
+        view.refresh()
+        view.tkraise()
 
     def _build_sidebar(self) -> None:
         sidebar = ttk.Frame(self, padding=12)
@@ -57,17 +64,9 @@ class App(tk.Tk):
         builders = {
             "Roster": lambda parent: CalendarView(parent, self.conn),
             "Employees": lambda parent: EmployeeView(parent, self.conn),
-            "Reports": lambda parent: _placeholder(parent, "Reports"),
+            "Reports": lambda parent: ReportView(parent, self.conn),
         }
         for name in VIEW_NAMES:
             view = builders[name](content)
             view.grid(row=0, column=0, sticky="nsew")
             self._views[name] = view
-
-
-def _placeholder(parent: ttk.Frame, name: str) -> ttk.Frame:
-    """A stand-in view, replaced as each real view is built."""
-    frame = ttk.Frame(parent, padding=24)
-    ttk.Label(frame, text=name, font=("", 16, "bold")).pack(anchor="w")
-    ttk.Label(frame, text="Not built yet.").pack(anchor="w", pady=(8, 0))
-    return frame

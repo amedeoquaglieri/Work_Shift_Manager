@@ -38,7 +38,8 @@ def hours_by_employee(
         if not shifts and not employee.is_active:
             continue
         hours = sum(
-            duration_hours(s.shift_date, s.start_time, s.end_time) for s in shifts
+            (duration_hours(s.shift_date, s.start_time, s.end_time) for s in shifts),
+            0.0,
         )
         rows.append(
             EmployeeHours(

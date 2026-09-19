@@ -9,9 +9,11 @@ from shiftmanager.utils import (
     duration_hours,
     format_date,
     format_weekday,
+    month_bounds,
     parse_date,
     parse_time,
     today,
+    week_bounds,
     week_dates,
     week_start,
 )
@@ -36,6 +38,19 @@ def test_week_start_finds_the_monday():
 
 def test_week_start_crosses_a_month_boundary():
     assert week_start("2026-10-01") == "2026-09-28"
+
+
+def test_week_bounds_runs_monday_to_sunday():
+    assert week_bounds("2026-09-24") == ("2026-09-21", "2026-09-27")
+
+
+def test_month_bounds_covers_the_whole_month():
+    assert month_bounds("2026-09-15") == ("2026-09-01", "2026-09-30")
+    assert month_bounds("2026-02-10") == ("2026-02-01", "2026-02-28")
+
+
+def test_month_bounds_handles_a_leap_year():
+    assert month_bounds("2028-02-10") == ("2028-02-01", "2028-02-29")
 
 
 def test_week_dates_returns_seven_consecutive_days():

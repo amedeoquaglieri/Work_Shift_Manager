@@ -62,6 +62,15 @@ def test_an_active_employee_with_no_shifts_still_appears(conn, ada):
     assert rows_by_name(conn)["Ada"].hours == 0.0
 
 
+def test_hours_are_always_a_float(conn, ada):
+    """Zero hours must not come back as an int, or the CSV column mixes types."""
+    assert isinstance(rows_by_name(conn)["Ada"].hours, float)
+
+    book(conn, ada)
+
+    assert isinstance(rows_by_name(conn)["Ada"].hours, float)
+
+
 def test_a_deactivated_employee_with_no_shifts_is_dropped(conn, ada):
     employee_repo.deactivate(conn, ada.id)
 

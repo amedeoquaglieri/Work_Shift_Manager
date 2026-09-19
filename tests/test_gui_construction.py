@@ -105,6 +105,14 @@ def test_the_roster_draws_a_staffed_shift(app):
     assert any(card.cget("text") == "09:00 - 17:00" for card in cards)
 
 
+def test_the_report_view_runs_for_the_current_week(app):
+    report = app._views["Reports"]
+
+    report.refresh()
+
+    assert "hours scheduled" in report._total.get()
+
+
 def test_assignment_dialog_builds_and_closes(app):
     shift = shift_repo.add(
         app.conn, Shift(shift_date="2026-09-21", start_time="09:00", end_time="17:00")
