@@ -2,7 +2,8 @@
 
 import sqlite3
 
-from shiftmanager.models import Assignment, Shift
+from shiftmanager.models import Assignment, Employee, Shift
+from shiftmanager.repositories.employee_repo import row_to_employee
 from shiftmanager.repositories.shift_repo import row_to_shift
 
 
@@ -37,6 +38,22 @@ def list_for_shift(conn: sqlite3.Connection, shift_id: int) -> list[Assignment]:
         )
         for row in rows
     ]
+
+
+def employees_for_shift(conn: sqlite3.Connection, shift_id: int) -> list[Employee]:
+    """Return the employees working a shift, by name.
+
+    Includes deactivated employees, so someone retired after being rostered
+    still shows on the shift and can be taken off it.
+    """
+    rows = conn.execute(
+        "SELECT e.id, e.name, e.position, e.phone, e.email, e.hourly_rate,"
+        " e.color_tag, e.is_active FROM employees e"
+        " JOIN assignments a ON a.employee_id = e.id"
+        " WHERE a.shift_id = ? ORDER BY e.name",
+        (shift_id,),
+    ).fetchall()
+    return [row_to_employee(row) for row in rows]
 
 
 def shifts_for_employee(

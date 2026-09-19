@@ -6,16 +6,18 @@ navigation replace that table in a later build step; the toolbar stays.
 
 from tkinter import messagebox, ttk
 
+from shiftmanager.gui.assignment_dialog import AssignmentDialog
 from shiftmanager.gui.shift_dialog import ShiftDialog
 from shiftmanager.gui.template_manager import TemplateManager
-from shiftmanager.repositories import shift_repo
+from shiftmanager.repositories import assignment_repo, shift_repo
 
 COLUMNS = (
     ("shift_date", "Date", 110),
     ("start_time", "Start", 70),
     ("end_time", "End", 70),
-    ("template", "Template", 130),
-    ("notes", "Notes", 260),
+    ("template", "Template", 110),
+    ("staff", "Staff", 220),
+    ("notes", "Notes", 180),
 )
 
 
@@ -47,6 +49,7 @@ class CalendarView(ttk.Frame):
                     shift.start_time,
                     shift.end_time,
                     names.get(shift.template_id, ""),
+                    self._staff(shift.id),
                     shift.notes or "",
                 ),
             )
@@ -62,6 +65,9 @@ class CalendarView(ttk.Frame):
         toolbar = ttk.Frame(self)
         toolbar.grid(row=1, column=0, sticky="ew", pady=(0, 8))
         ttk.Button(toolbar, text="New shift", command=self._add).pack(side="left")
+        ttk.Button(toolbar, text="Assign staff", command=self._assign).pack(
+            side="left", padx=(8, 0)
+        )
         ttk.Button(toolbar, text="Edit", command=self._edit).pack(
             side="left", padx=(8, 0)
         )
@@ -79,7 +85,7 @@ class CalendarView(ttk.Frame):
             self._tree.heading(key, text=heading)
             self._tree.column(key, width=width, anchor="w")
         self._tree.grid(row=2, column=0, sticky="nsew")
-        self._tree.bind("<Double-1>", lambda _: self._edit())
+        self._tree.bind("<Double-1>", lambda _: self._assign())
 
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=self._tree.yview)
         scrollbar.grid(row=2, column=1, sticky="ns")
@@ -112,6 +118,18 @@ class CalendarView(ttk.Frame):
         ):
             shift_repo.delete(self.conn, selected.id)
             self.refresh()
+
+    def _assign(self) -> None:
+        selected = self._selected()
+        if selected is None:
+            return
+        if AssignmentDialog(self, self.conn, selected).show():
+            self.refresh()
+
+    def _staff(self, shift_id: int) -> str:
+        """The names working a shift, for the list column."""
+        employees = assignment_repo.employees_for_shift(self.conn, shift_id)
+        return ", ".join(employee.name for employee in employees)
 
     def _manage_templates(self) -> None:
         TemplateManager(self, self.conn).wait_window()

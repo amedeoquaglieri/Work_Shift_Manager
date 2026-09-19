@@ -39,6 +39,30 @@ def test_list_for_shift_returns_only_that_shift(conn, ada, monday):
     assert sorted(a.employee_id for a in found) == sorted([ada.id, mo.id])
 
 
+def test_employees_for_shift_returns_them_by_name(conn, ada, monday):
+    zoe = employee_repo.add(conn, Employee(name="Zoe"))
+    mo = employee_repo.add(conn, Employee(name="Mo"))
+    for employee in (zoe, ada, mo):
+        assignment_repo.add(conn, monday.id, employee.id)
+
+    found = assignment_repo.employees_for_shift(conn, monday.id)
+
+    assert [e.name for e in found] == ["Ada", "Mo", "Zoe"]
+
+
+def test_employees_for_shift_includes_deactivated_staff(conn, ada, monday):
+    assignment_repo.add(conn, monday.id, ada.id)
+    employee_repo.deactivate(conn, ada.id)
+
+    found = assignment_repo.employees_for_shift(conn, monday.id)
+
+    assert [(e.name, e.is_active) for e in found] == [("Ada", False)]
+
+
+def test_employees_for_shift_is_empty_when_nobody_is_on_it(conn, monday):
+    assert assignment_repo.employees_for_shift(conn, monday.id) == []
+
+
 def test_remove_takes_the_employee_off_the_shift(conn, ada, monday):
     assignment_repo.add(conn, monday.id, ada.id)
 

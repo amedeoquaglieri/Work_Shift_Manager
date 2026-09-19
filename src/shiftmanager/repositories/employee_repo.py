@@ -1,4 +1,4 @@
-"""Database access for employees."""
+﻿"""Database access for employees."""
 
 import sqlite3
 from dataclasses import replace
@@ -41,7 +41,7 @@ def get(conn: sqlite3.Connection, employee_id: int) -> Employee | None:
     row = conn.execute(
         f"SELECT {_COLUMNS} FROM employees WHERE id = ?", (employee_id,)
     ).fetchone()
-    return _to_employee(row) if row else None
+    return row_to_employee(row) if row else None
 
 
 def list_all(
@@ -52,7 +52,7 @@ def list_all(
     if not include_inactive:
         sql += " WHERE is_active = 1"
     rows = conn.execute(sql + " ORDER BY name").fetchall()
-    return [_to_employee(row) for row in rows]
+    return [row_to_employee(row) for row in rows]
 
 
 def _values(employee: Employee) -> tuple:
@@ -68,7 +68,11 @@ def _values(employee: Employee) -> tuple:
     )
 
 
-def _to_employee(row: sqlite3.Row) -> Employee:
+def row_to_employee(row: sqlite3.Row) -> Employee:
+    """Build an Employee from a row selecting the employee columns above.
+
+    Public so joins in other repositories can reuse it.
+    """
     return Employee(
         id=row["id"],
         name=row["name"],

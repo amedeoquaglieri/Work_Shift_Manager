@@ -11,11 +11,13 @@ tkinter = pytest.importorskip("tkinter")
 
 from shiftmanager.db import IN_MEMORY, connect  # noqa: E402
 from shiftmanager.gui import App  # noqa: E402
+from shiftmanager.gui.assignment_dialog import AssignmentDialog  # noqa: E402
 from shiftmanager.gui.employee_dialog import EmployeeDialog  # noqa: E402
 from shiftmanager.gui.shift_dialog import ShiftDialog  # noqa: E402
 from shiftmanager.gui.template_dialog import TemplateDialog  # noqa: E402
 from shiftmanager.gui.template_manager import TemplateManager  # noqa: E402
 from shiftmanager.models import Employee, Shift, ShiftTemplate  # noqa: E402
+from shiftmanager.repositories import employee_repo, shift_repo  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -69,3 +71,20 @@ def test_template_dialog_builds_from_an_existing_template(app):
 
 def test_template_manager_builds_and_closes(app):
     TemplateManager(app, app.conn).destroy()
+
+
+def test_assignment_dialog_builds_and_closes(app):
+    shift = shift_repo.add(
+        app.conn, Shift(shift_date="2026-09-21", start_time="09:00", end_time="17:00")
+    )
+    employee_repo.add(app.conn, Employee(name="Ada"))
+
+    AssignmentDialog(app, app.conn, shift).destroy()
+
+
+def test_assignment_dialog_builds_with_no_employees(app):
+    shift = shift_repo.add(
+        app.conn, Shift(shift_date="2026-09-22", start_time="09:00", end_time="17:00")
+    )
+
+    AssignmentDialog(app, app.conn, shift).destroy()
