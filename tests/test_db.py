@@ -4,16 +4,9 @@ import sqlite3
 
 import pytest
 
-from shiftmanager.db import IN_MEMORY, connect, create_schema
+from shiftmanager.db import connect, create_schema
 
 EXPECTED_TABLES = {"employees", "shift_templates", "shifts", "assignments"}
-
-
-@pytest.fixture
-def conn():
-    connection = connect(IN_MEMORY)
-    yield connection
-    connection.close()
 
 
 def table_names(connection):
