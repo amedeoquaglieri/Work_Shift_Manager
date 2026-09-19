@@ -20,6 +20,27 @@ def format_date(value: date) -> str:
     return value.strftime(DATE_FORMAT)
 
 
+def today() -> str:
+    """Today's date as ``"YYYY-MM-DD"``."""
+    return format_date(date.today())
+
+
+def week_start(date_str: str) -> str:
+    """The Monday of the week containing the given date."""
+    value = parse_date(date_str)
+    return format_date(value - timedelta(days=value.weekday()))
+
+
+def week_dates(start_date: str) -> list[str]:
+    """Seven consecutive dates beginning at the given one."""
+    return [add_days(start_date, offset) for offset in range(7)]
+
+
+def format_weekday(date_str: str) -> str:
+    """A short day label such as ``"Mon 21 Sep"``."""
+    return parse_date(date_str).strftime("%a %d %b")
+
+
 def parse_time(time_str: str) -> time:
     """Read an ``"HH:MM"`` string, raising ValueError when it is malformed."""
     return datetime.strptime(time_str, TIME_FORMAT).time()

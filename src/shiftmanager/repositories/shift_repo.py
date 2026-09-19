@@ -56,14 +56,6 @@ def list_between(
     return [row_to_shift(row) for row in rows]
 
 
-def list_all(conn: sqlite3.Connection) -> list[Shift]:
-    """Return every shift, in roster order."""
-    rows = conn.execute(
-        f"SELECT {_SHIFT_COLUMNS} FROM shifts ORDER BY shift_date, start_time"
-    ).fetchall()
-    return [row_to_shift(row) for row in rows]
-
-
 def add_template(
     conn: sqlite3.Connection, template: ShiftTemplate
 ) -> ShiftTemplate:

@@ -17,7 +17,12 @@ from shiftmanager.gui.shift_dialog import ShiftDialog  # noqa: E402
 from shiftmanager.gui.template_dialog import TemplateDialog  # noqa: E402
 from shiftmanager.gui.template_manager import TemplateManager  # noqa: E402
 from shiftmanager.models import Employee, Shift, ShiftTemplate  # noqa: E402
-from shiftmanager.repositories import employee_repo, shift_repo  # noqa: E402
+from shiftmanager.repositories import (  # noqa: E402
+    assignment_repo,
+    employee_repo,
+    shift_repo,
+)
+from shiftmanager.utils import today  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -71,6 +76,33 @@ def test_template_dialog_builds_from_an_existing_template(app):
 
 def test_template_manager_builds_and_closes(app):
     TemplateManager(app, app.conn).destroy()
+
+
+def test_the_roster_draws_seven_days(app):
+    roster = app._views["Roster"]
+
+    roster.refresh()
+
+    assert len(roster._grid.winfo_children()) == 7
+
+
+def test_the_roster_draws_a_staffed_shift(app):
+    shift = shift_repo.add(
+        app.conn, Shift(shift_date=today(), start_time="09:00", end_time="17:00")
+    )
+    employee = employee_repo.add(app.conn, Employee(name="Rostered", color_tag="#3366cc"))
+    assignment_repo.add(app.conn, shift.id, employee.id)
+
+    roster = app._views["Roster"]
+    roster.refresh()
+
+    cards = [
+        child
+        for column in roster._grid.winfo_children()
+        for child in column.winfo_children()
+        if child.winfo_class() == "TLabelframe"
+    ]
+    assert any(card.cget("text") == "09:00 - 17:00" for card in cards)
 
 
 def test_assignment_dialog_builds_and_closes(app):

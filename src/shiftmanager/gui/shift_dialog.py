@@ -17,7 +17,14 @@ class ShiftDialog(tk.Toplevel):
     free to edit, and are always stored on the shift itself.
     """
 
-    def __init__(self, parent, conn, title: str, shift: Shift | None = None):
+    def __init__(
+        self,
+        parent,
+        conn,
+        title: str,
+        shift: Shift | None = None,
+        default_date: str | None = None,
+    ):
         super().__init__(parent)
         self.title(title)
         self.resizable(False, False)
@@ -34,6 +41,8 @@ class ShiftDialog(tk.Toplevel):
 
         self._build()
         self._prefill(shift)
+        if shift is None and default_date:
+            self._date.set(default_date)
 
         self.transient(parent)
         self.grab_set()
